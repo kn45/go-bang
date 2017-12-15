@@ -65,15 +65,68 @@ class TikTokToe(object):
         # change player
         self.player = self.player * (-1)
 
-    def get_eval(self, view_idx):
+    def get_value(self, view_idx):
         # in view of player
         stat = self.get_status()
         res = stat * 10 * view_idx if abs(stat) == 1 else 0
-        # print res
         return res
 
 
-class MinMaxSimplePlayer(object):
+class MinMaxABPlayer(object):
+    def __init__(self, player_idx):
+        self.PLAYER = player_idx
+        self.MIN_VAL = -100
+        self.MAX_VAL = +100
+
+    def get_best_move(self, game):
+        res = self.max_move(game, level=0, alpha=self.MIN_VAL, beta=self.MAX_VAL)
+        return res
+
+    def max_move(self, game, level, alpha, beta):
+        # return the pos and value i.e. max value
+        best_pos = None
+        best_value = self.MIN_VAL
+        if game.is_end():  # there's winner or full-board
+            return best_pos, game.get_value(self.PLAYER)
+        moves = game.get_available_moves()
+        # if moves is empty, return best_value = current_value
+        for ntrial, pos in enumerate(moves):
+            game_after_move = copy.deepcopy(game)
+            game_after_move.move(pos)
+            min_value = self.min_move(game_after_move, level - 1, alpha, beta)
+            if min_value > best_value:
+                best_pos = pos
+                best_value = min_value
+            alpha = max(best_value, alpha)
+            if alpha >= beta:
+                break
+        return best_pos, best_value
+
+    def min_move(self, game, level, alpha, beta):
+        # return the pos and value i.e. min value
+        # alpha is the best_value for now in a max_move
+        # beta is the best_value for now in a min_move
+        best_pos = None
+        best_value = self.MAX_VAL
+        if game.is_end():  # there's winner or full-board
+            return game.get_value(self.PLAYER)
+        moves = game.get_available_moves()
+        for ntrial, pos in enumerate(moves):
+            game_after_move = copy.deepcopy(game)
+            game_after_move.move(pos)
+            _, max_value = self.max_move(game_after_move, level - 1, alpha, beta)
+            # update value
+            if max_value < best_value:
+                best_pos = pos
+                best_value = max_value
+            # update beta
+            beta = min(best_value, beta)
+            if beta <= alpha:  # < or <= ?
+                break
+        return best_value
+
+
+class MinMaxBasicPlayer(object):
     def __init__(self, player_idx):
         self.player = player_idx
 
@@ -83,16 +136,16 @@ class MinMaxSimplePlayer(object):
     def max_move(self, game):
         # return the pos and value i.e. max value
         best_pos = None
-        best_value = game.get_eval(self.player)
+        best_value = None
         if game.is_end():  # there's winner or full-board
-            return best_pos, best_value
+            return best_pos, game.get_value(self.player)
         moves = game.get_available_moves()
         # if moves is empty, return best_value = current_value
         for pos in moves:
             game_after_move = copy.deepcopy(game)
             game_after_move.move(pos)
             min_value = self.min_move(game_after_move)
-            if (best_pos is None) or min_value > best_value:
+            if (best_value is None) or min_value > best_value:
                 best_pos = pos
                 best_value = min_value
         return best_pos, best_value
@@ -100,9 +153,9 @@ class MinMaxSimplePlayer(object):
     def min_move(self, game):
         # return the pos and value i.e. min value
         best_pos = None
-        best_value = game.get_eval(self.player)
+        best_value = None
         if game.is_end():  # there's winner or full-board
-            return best_value
+            return game.get_value(self.player)
         moves = game.get_available_moves()
         for pos in moves:
             game_after_move = copy.deepcopy(game)
@@ -118,41 +171,66 @@ class RandomPlayer(object):
     def get_best_move(self, game):
         moves = game.get_available_moves()
         move = moves[int(random.random() * len(moves))]
-        return move, 0
+        return move, -999
 
 
 class ManualPlayer(object):
     def get_best_move(self, game):
         move = raw_input('input position, e.g. 0,1\n')
         pos = map(int, move.split(','))
-        return tuple(pos), 0
+        return tuple(pos), -999
 
 
-def random_vs_mmsimple():
-    # players = [RandomPlayer(), MinMaxSimplePlayer(player_idx=1)]
-    players = [MinMaxSimplePlayer(player_idx=-1), RandomPlayer()]
+def mmab_vs_mmab():
+    players = [MinMaxABPlayer(player_idx=-1), MinMaxABPlayer(player_idx=+1)]
+    ttt = TikTokToe()
+    while not ttt.is_end():
+        player_idx = (ttt.player + 1) / 2
+        move, val = players[player_idx].get_best_move(ttt)
+        ttt.move(move)
+    print 'res: ', ttt.get_status()
+
+
+def random_vs_mmab(random_first=True):
+    if random_first:
+        players = [RandomPlayer(), MinMaxABPlayer(player_idx=+1)]
+    else:
+        players = [MinMaxABPlayer(player_idx=-1), RandomPlayer()]
+    ttt = TikTokToe()
+    while not ttt.is_end():
+        player_idx = (ttt.player + 1) / 2
+        move, val = players[player_idx].get_best_move(ttt)
+        ttt.move(move)
+    print 'res: ', ttt.get_status()
+
+
+def manual_vs_mmbasic():
+    players = [ManualPlayer(), MinMaxBasicPlayer(player_idx=1)]
     ttt = TikTokToe()
     print ttt
     while not ttt.is_end():
         player_idx = (ttt.player + 1) / 2
         move, val = players[player_idx].get_best_move(ttt)
         ttt.move(move)
-        print val
         print ttt
+        print val
     print 'res: ', ttt.get_status()
 
 
-def manual_vs_mmsimple():
-    players = [ManualPlayer(), MinMaxSimplePlayer(player_idx=1)]
+def manual_vs_mmab():
+    players = [ManualPlayer(), MinMaxABPlayer(player_idx=1)]
     ttt = TikTokToe()
     print ttt
+    print ''
     while not ttt.is_end():
         player_idx = (ttt.player + 1) / 2
         move, val = players[player_idx].get_best_move(ttt)
         ttt.move(move)
-        print val
         print ttt
+        print 'p', ttt.player * (-1), val
+        print ''
     print 'res: ', ttt.get_status()
+
 
 def random_vs_random():
     p1 = RandomPlayer()
@@ -165,5 +243,10 @@ def random_vs_random():
 
 
 if __name__ == '__main__':
-    # random_vs_mmsimple()
-    manual_vs_mmsimple()
+    for _ in range(100):
+        # random_vs_mmbasic()
+        # manual_vs_mmbasic()
+        # manual_vs_mmab()
+        # random_vs_mmab()
+        mmab_vs_mmab()
+
