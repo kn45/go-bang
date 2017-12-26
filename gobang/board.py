@@ -1,4 +1,6 @@
 # -*- coding=utf8 -*-
+
+import common
 import random
 from itertools import product
 
@@ -9,7 +11,7 @@ class GobangBoard(object):
         # 0 for emply, ±1 for each player
         self._layout = [[0] * self.width for x in range(self.width)]
         self._sign = {-1: 'O', 0: '┼', +1: '█'}  # repr ign
-        self.point_count = 0  # how many points is placed
+        self.capacity = self.width ** 2  # how many empty point
 
     def __str__(self):
         str_repr = ''
@@ -32,7 +34,7 @@ class GobangBoard(object):
             return False
         else:
             return True
- 
+
     def __set_layout(self, pos, val):
         # all layout set operation should use this func
         if not self.pos_in_board(pos):
@@ -42,37 +44,31 @@ class GobangBoard(object):
         i, j = pos
         self._layout[i][j] = val
         if val != 0:
-            self.point_count += 1
-
-    def __sign(self, a):
-        return 1 if a > 0 else -1 if a < 0 else 0
+            self.capacity -= 1
 
     def place(self, pos, player):
         self.__set_layout(pos, player)
 
     def max_abs_subsum(self, st_pos, ed_pos):
         # return the 5-subsum in the line-shaped region with max abs
+        # return +5 or -5 means winning on this line
         # st_pos and ed_pos must be in a line (diag line is ok)
-        st_i, st_j = st_pos
+        i, j = st_pos
         ed_i, ed_j = ed_pos
+        delta_x = ed_i - i
+        delta_y = ed_j - j
+        if delta_x != 0 and delta_y != 0 and abs(delta_x) != abs(delta_y):  # not in a line
+            raise ValueError('start_pos and end_pos not in a line')
         data_line = []
-        i = st_i
-        j = st_j
         if self.pos_in_board(st_pos):
             data_line.append(self._layout[i][j])
-        while not (i == ed_i and j == ed_j):
-            i = i + self.__sign(ed_i - i)
-            j = j + self.__sign(ed_j - j)
+        while not (i == ed_i and j == ed_j):  # move one step to end_pos
+            i = i + common.sign(ed_i - i)
+            j = j + common.sign(ed_j - j)
             if self.pos_in_board((i, j)):
                 data_line.append(self._layout[i][j])
-        print data_line
         sums = [sum(data_line[offset:offset+5]) for offset in range(5)]
-        max_sum = max(sums)
-        min_sum = min(sums)
-        if abs(max_sum) >= abs(min_sum):
-            return max_sum
-        else:
-            return min_sum
+        return common.max_abs(sums)
 
     def _set_all(self, val=None):
         # set all the board to a certain value. if value is None, random all
@@ -91,7 +87,7 @@ class GobangBoard(object):
         print self
         self._set_all()
         print self
-        print self.max_min_subsum((-3, 5), (5, 5))
+        print self.max_abs_subsum((-3, 5), (5, 5))
 
 
 if __name__ == '__main__':
