@@ -243,9 +243,9 @@ def random_vs_random():
 
 
 if __name__ == '__main__':
-    for _ in range(100):
+    for _ in range(1):
         # random_vs_mmbasic()
         # manual_vs_mmbasic()
-        # manual_vs_mmab()
+        manual_vs_mmab()
         # random_vs_mmab()
-        mmab_vs_mmab()
+        # mmab_vs_mmab()
