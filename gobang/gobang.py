@@ -116,13 +116,13 @@ class Gobang(object):
 if __name__ == '__main__':
     avl_moves = AvlMoves(GobangBoard())
     print avl_moves.get_all()
-    avl_moves._update_dbg(pos=(3,3), min_radius=1, min_count=0)
+    avl_moves._update_dbg(pos=(3, 3), min_radius=1, min_count=0)
     print avl_moves.get_all()
 
     game = Gobang()
     print game.get_available_moves()
-    game.move((7,7))
+    game.move((7, 7))
     print game.board
     print game.get_available_moves()
-    game.move((8,9))
+    game.move((8, 9))
     print game.board
