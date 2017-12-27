@@ -10,8 +10,9 @@ class GobangBoard(object):
         self.__width = 15
         # 0 for emply, ±1 for each player
         self.__layout = [[0] * self.__width for x in range(self.__width)]
-        self.__sign = {-1: 'O', 0: '┼', +1: '█'}  # repr sign
+        self.__sign = {-1: '█', 0: '┼', +1: 'O'}  # repr sign
         self.__capacity = self.__width ** 2  # how many empty point
+        self.__all_points = set([])
 
     def __str__(self):
         str_repr = ''
@@ -30,6 +31,7 @@ class GobangBoard(object):
 
     def __set__layout(self, pos, val):
         # all layout set operation should use this func
+        # including placing and REMOVING
         if not self.is_pos_in_board(pos):
             raise Exception('Position out of board range')
         if val not in self.__sign:
@@ -37,15 +39,35 @@ class GobangBoard(object):
         i, j = pos
         # update capacity. 0 -> ±1 or ±1 -> 0 would cause capacity change
         self.__capacity += abs(self.__layout[i][j]) - abs(val)
+        # update all_ponits
+        if val == 0:
+            self.__all_points.discard((i, j))
+        else:
+            self.__all_points.add((i, j))
+        # DO!
         self.__layout[i][j] = val
 
     @property
     def capacity(self):
         return self.__capacity
 
+    @property
+    def width(self):
+        return self.__width
+
+    @property
+    def all_points(self):
+        return list(self.__all_points)
+
     def is_pos_in_board(self, pos):
         row, col = pos
         return False if max(row, col) >= self.__width or min(row, col) < 0 else True
+
+    def is_full(self):
+        return True if self.__capacity == self.__width ** 2 else False
+
+    def is_empty(self):
+        return True if self.__capacity <= 0 else False
 
     def place(self, pos, player):
         self.__set__layout(pos, player)
