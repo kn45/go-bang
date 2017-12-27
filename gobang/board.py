@@ -45,10 +45,7 @@ class GobangBoard(object):
 
     def is_pos_in_board(self, pos):
         row, col = pos
-        if max(row, col) >= self.__width or min(row, col) < 0:
-            return False
-        else:
-            return True
+        return False if max(row, col) >= self.__width or min(row, col) < 0 else True
 
     def place(self, pos, player):
         self.__set__layout(pos, player)
