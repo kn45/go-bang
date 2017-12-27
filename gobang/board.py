@@ -33,11 +33,11 @@ class GobangBoard(object):
         if not self.is_pos_in_board(pos):
             raise Exception('Position out of board range')
         if val not in self.__sign:
-            raise Exception('Not available board value')
+            raise ValueError('Not available board value')
         i, j = pos
+        # update capacity. 0 -> ±1 or ±1 -> 0 would cause capacity change
+        self.__capacity += abs(self.__layout[i][j]) - abs(val)  
         self.__layout[i][j] = val
-        if val != 0:
-            self.__capacity -= 1
 
     @property
     def capacity(self):
