@@ -19,9 +19,20 @@ def max_abs(vals):
     return ret
 
 
+def cprint(verbose):
+    def _cprint(content):
+        if verbose:
+            print content
+    return _cprint
+
+
 if __name__ == '__main__':
     print sign(4)
     print sign(0)
     print sign(-4)
     print max_abs([-5, 6])
     print max_abs([-5, 3])
+    gprint = cprint(True)
+    gprint('h')
+    gprint = cprint(False)
+    gprint('g')

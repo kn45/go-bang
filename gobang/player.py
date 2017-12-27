@@ -22,16 +22,16 @@ class RandomPlayer(Player):
 
 class ManualPlayer(Player):
     def choose_best_move(self, game):
-        move = raw_input('input position, e.g. f11\n')
-        col = int(move[1:])
-        if col < 1 or col > 15:
-            print 'column should be within [1, 15]'
+        move = raw_input('Input position, e.g. f11\n')
+        row = int(move[1:])
+        if row < 1 or row > 15:
+            print 'Row should be within [1, 15]'
             return self.choose_best_move(game)
-        row = move[0].lower()
-        if row < 'a' or row > 'f':
-            print 'row should be within [a, f]'
+        col = move[0].lower()
+        if col < 'a' or col > 'o':
+            print 'Column should be within [a, o]'
             return self.choose_best_move(game)
-        pos = (ord(row)-ord('a'), col-1)
+        pos = (15-row, ord(col)-ord('a'))
         value = -999
         return pos, value
 

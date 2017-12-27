@@ -10,7 +10,7 @@ class GobangBoard(object):
         self.__width = 15
         # 0 for emply, ±1 for each player
         self.__layout = [[0] * self.__width for x in range(self.__width)]
-        self.__sign = {-1: '█', 0: '┼', +1: 'O'}  # repr sign
+        self.__sign = {-1: '█', 0: '┼', +1: '░'}  # repr sign
         self.__capacity = self.__width ** 2  # how many empty point
         self.__all_points = set([])
 
@@ -70,7 +70,10 @@ class GobangBoard(object):
         return True if self.__capacity <= 0 else False
 
     def place(self, pos, player):
+        if pos in self.__all_points:  # already placed
+            return False
         self.__set__layout(pos, player)
+        return True
 
     def max_abs_subsum(self, st_pos, ed_pos):
         # return the 5-subsum in the line-shaped region with max abs

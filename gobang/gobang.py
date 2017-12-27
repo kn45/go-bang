@@ -101,13 +101,16 @@ class Gobang(object):
             (0 if self.__board.is_full() else 2)
 
     def move(self, pos):
-        self.__board.place(pos, self.__player)
+        succ = self.__board.place(pos, self.__player)
+        if not succ:
+            return False
         # update available moves
         self.__avl_move.update(pos)
         # update game status
         self.__update_game_status(pos)
         # switch player
         self.__player *= -1
+        return True
 
     def get_available_moves(self):
         return self.__avl_move.get_all()
