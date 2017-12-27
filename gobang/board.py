@@ -98,4 +98,5 @@ if __name__ == '__main__':
     board = GobangBoard()
     board.test()
     print board[3][4]
+    print board[(3, 4)]
     print dir(board)
