@@ -3,8 +3,13 @@ def sign(x):
 
 
 def max_abs(vals):
+    """return the item with max absolute value in the list
+    """
+    if not isinstance(vals, list):
+        raise TypeError('input of max_abs must be list')
     if len(vals) < 1:
         raise ValueError('max_abs() arg is an empty sequence')
+
     ret = vals[0]
     mabs = abs(vals[0])
     for val in vals:
