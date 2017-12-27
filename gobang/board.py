@@ -36,7 +36,7 @@ class GobangBoard(object):
             raise ValueError('Not available board value')
         i, j = pos
         # update capacity. 0 -> ±1 or ±1 -> 0 would cause capacity change
-        self.__capacity += abs(self.__layout[i][j]) - abs(val)  
+        self.__capacity += abs(self.__layout[i][j]) - abs(val)
         self.__layout[i][j] = val
 
     @property
