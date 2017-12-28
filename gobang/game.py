@@ -2,7 +2,9 @@
 
 import common
 import random
+import sys
 from itertools import product
+from player import AvlMoves
 
 
 class GobangBoard(object):
@@ -10,9 +12,9 @@ class GobangBoard(object):
         self.__width = 15
         # 0 for emply, ±1 for each player
         self.__layout = [[0] * self.__width for x in range(self.__width)]
-        self.__sign = {-1: '█', 0: '┼', +1: '░'}  # repr sign
-        self.__capacity = self.__width ** 2  # how many empty point
-        self.__all_points = set([])
+        self.__sign = {-1: '●', 0: '┼', +1: 'o'}  # repr sign
+        self.__capacity = self.__width ** 2  # how many empty positions
+        self.__all_stones = set([])
 
     def __str__(self):
         str_repr = ''
@@ -41,9 +43,9 @@ class GobangBoard(object):
         self.__capacity += abs(self.__layout[i][j]) - abs(val)
         # update all_ponits
         if val == 0:
-            self.__all_points.discard((i, j))
+            self.__all_stones.discard((i, j))
         else:
-            self.__all_points.add((i, j))
+            self.__all_stones.add((i, j))
         # DO!
         self.__layout[i][j] = val
 
@@ -56,8 +58,8 @@ class GobangBoard(object):
         return self.__width
 
     @property
-    def all_points(self):
-        return list(self.__all_points)
+    def all_stones(self):
+        return list(self.__all_stones)
 
     def is_pos_in_board(self, pos):
         row, col = pos
@@ -70,7 +72,7 @@ class GobangBoard(object):
         return True if self.__capacity <= 0 else False
 
     def place(self, pos, player):
-        if pos in self.__all_points:  # already placed
+        if pos in self.__all_stones:  # already placed
             return False
         self.__set__layout(pos, player)
         return True
@@ -114,11 +116,78 @@ class GobangBoard(object):
         self.set_all()
         print self
         print self.max_abs_subsum((-3, 5), (5, 5))
+        print self[3][4]
+        print self[(3, 4)]
+
+
+class Gobang(object):
+    def __init__(self):
+        self.__board = GobangBoard()
+        self.__player = -1  # -1 or +1
+        self.__game_status = 2  # ±1 for each winner, 0 for draw, 2 for undergoing
+        self.__avl_move = AvlMoves(self.__board)
+
+    def __check_win_status(self, pos):
+        # evaluate winner
+        # ±1 - each winner
+        #  0 - other case
+        c_i, c_j = pos
+        # check row direction
+        mass_row = self.__board.max_abs_subsum((c_i, c_j-4), (c_i, c_j+4))
+        mass_col = self.__board.max_abs_subsum((c_i-4, c_j), (c_i+4, c_j))
+        mass_diag = self.__board.max_abs_subsum((c_i-4, c_j-4), (c_i+4, c_j+4))
+        max_abs_val = common.max_abs([mass_row, mass_col, mass_diag])
+        return common.sign(max_abs_val) if abs(max_abs_val) == 5 else 0
+
+    @property
+    def game_status(self):
+        return self.__game_status
+
+    @property
+    def board(self):
+        return self.__board
+
+    @property
+    def player(self):
+        return self.__player
+
+    def __update_game_status(self, pos):
+        # ±1 each winner
+        #  0 draw
+        #  2 undergoing
+        win_status = self.__check_win_status(pos)
+        self.__game_status = win_status if win_status != 0 else \
+            (0 if self.__board.is_full() else 2)
+
+    def move(self, pos):
+        succ = self.__board.place(pos, self.__player)
+        if not succ:
+            return False
+        # update available moves
+        self.__avl_move.update(last_pos=pos)
+        # update game status
+        self.__update_game_status(pos)
+        # switch player
+        self.__player *= -1
+        return True
+
+    def get_available_moves(self):
+        return self.__avl_move.get_all()
 
 
 if __name__ == '__main__':
     board = GobangBoard()
     board.test()
-    print board[3][4]
-    print board[(3, 4)]
-    print dir(board)
+
+    avl_moves = AvlMoves(GobangBoard())
+    print avl_moves.get_all()
+    avl_moves._update_dbg(pos=(3, 3), min_radius=1, min_count=0)
+    print avl_moves.get_all()
+
+    game = Gobang()
+    print game.get_available_moves()
+    game.move((7, 7))
+    print game.board
+    print game.get_available_moves()
+    game.move((8, 9))
+    print game.board

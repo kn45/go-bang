@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from gobang import *
+from game import *
 from player import *
 from common import cprint
 
