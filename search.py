@@ -1,8 +1,12 @@
 import copy
 from game import GameStatus
 
+
 class Search(object):
-    pass
+    # @override
+    def search_best_move(self, game, eval_side):
+        pass
+
 
 class MinMax(Search):
     def __init__(self, evaluate, max_depth):

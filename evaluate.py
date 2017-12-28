@@ -15,6 +15,7 @@ class Evaluate(object):
     def evaluate(self, **kwargs):
         return 0
 
+
 class SimpleEndEval(Evaluate):
     def __init__(self):
         super(SimpleEndEval, self).__init__(-1, +1)
@@ -26,6 +27,7 @@ class SimpleEndEval(Evaluate):
             return game.game_status * eval_side
         else:
             return 0
+
 
 if __name__ == '__main__':
     s = SimpleEndEval()
