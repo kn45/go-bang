@@ -19,6 +19,7 @@ class AiPlayer(Player):
         super(AiPlayer, self).__init__(player_idx)
         self.MIN_VAL = -100
         self.MAX_VAL = +100
+        self.MAX_DEPTH = 4
         self.__evaluate = lambda x, y: random.random()
 
     def __max_move(self, game, level, alpha, beta):
@@ -27,7 +28,7 @@ class AiPlayer(Player):
         # beta is the best_value for now in a min_move
         best_pos = None
         best_value = self.MIN_VAL
-        if game.game_status != game.UNDERGOING:
+        if game.game_status != GameStatus.UNDERGOING or abs(level) > self.MAX_DEPTH:
             return best_pos, self.__evaluate(game.board, self.PLAYER)
         moves = game.get_available_moves()
         for pos in moves:
@@ -46,13 +47,13 @@ class AiPlayer(Player):
         # return the best(min) value
         best_pos = None
         best_value = self.MAX_VAL
-        if game.game_status != GameStatus.UNDERGOING:
-            return self.__evalute(game.board, self.PLAYER)
+        if game.game_status != GameStatus.UNDERGOING or abs(level) > self.MAX_DEPTH:
+            return self.__evaluate(game.board, self.PLAYER)
         moves = game.get_available_moves()
         for pos in moves:
             game_after_move = copy.deepcopy(game)
             game_after_move.move(pos)
-            _, max_value = self.max_move(game_after_move, level-1, alpha, beta)
+            _, max_value = self.__max_move(game_after_move, level-1, alpha, beta)
             # update best value and beta
             if max_value < best_value:
                 best_pos = pos
@@ -61,6 +62,9 @@ class AiPlayer(Player):
             if beta <= alpha:
                 break
         return best_value
+
+    def choose_best_move(self, game):
+        return self.__max_move(game, level=0, alpha=self.MIN_VAL, beta=self.MAX_VAL)
 
 class RandomPlayer(Player):
     def choose_best_move(self, game):
@@ -87,6 +91,6 @@ class ManualPlayer(Player):
 
 if __name__ == '__main__':
     game = Gobang()
-    p1 = RandomPlayer(-1)
-    p2 = RandomPlayer(+1)
-    print p1.choose_best_move(game)
+    p1 = RandomPlayer()
+    p3 = AiPlayer(-1)
+    print p3.choose_best_move(game)
