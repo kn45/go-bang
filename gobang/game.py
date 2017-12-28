@@ -4,7 +4,7 @@ import common
 import random
 import sys
 from itertools import product
-from player import AvlMoves
+from callback import AvlMoves
 
 
 class GobangBoard(object):
@@ -125,12 +125,10 @@ class Gobang(object):
         self.__board = GobangBoard()
         self.__player = -1  # -1 or +1
         self.__game_status = 2  # ±1 for each winner, 0 for draw, 2 for undergoing
-        self.__avl_move = AvlMoves(self.__board)
+        self.__callbacks = {'AvlMoves': AvlMoves(self.__board)}
 
     def __check_win_status(self, pos):
-        # evaluate winner
-        # ±1 - each winner
-        #  0 - other case
+        # evaluate winner. ±1 - each winner; 0 - other case
         c_i, c_j = pos
         # check row direction
         mass_row = self.__board.max_abs_subsum((c_i, c_j-4), (c_i, c_j+4))
@@ -159,20 +157,27 @@ class Gobang(object):
         self.__game_status = win_status if win_status != 0 else \
             (0 if self.__board.is_full() else 2)
 
+    def add_callback(self, **kwargs):
+        for callback_name in kwargs:
+            if callback_name not in self.__callbacks:
+                self.__callbacks[callback_name] = kwargs[callback_name]
+
     def move(self, pos):
         succ = self.__board.place(pos, self.__player)
         if not succ:
             return False
-        # update available moves
-        self.__avl_move.update(last_pos=pos)
         # update game status
         self.__update_game_status(pos)
         # switch player
         self.__player *= -1
+        # update callbacks
+        callback_args = {'last_pos': pos}
+        for callback_name in self.__callbacks:
+            self.__callbacks[callback_name].update(**callback_args)
         return True
 
     def get_available_moves(self):
-        return self.__avl_move.get_all()
+        return self.__callbacks['AvlMoves'].get_all()
 
 
 if __name__ == '__main__':
