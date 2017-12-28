@@ -29,7 +29,17 @@ def play_gobang_rounds(p1, p2, nround=100):
     return res_count
 
 
+def play_tictactoe_rounds(p1, p2, nround=100):
+    res_count = [0] * 3  # np1win, ndraw, np2win
+    for _ in range(nround):
+        res = play_game(TicTacToe(), p1, p2, verbose=False)
+        res_count[res+1] += 1
+    return res_count
+
+
 if __name__ == '__main__':
     # play_game(GoBang(), RandomPlayer(), ManualPlayer())
-    play_game(TicTacToe(), RandomPlayer(), ManualPlayer())
-    print play_gobang_rounds(RandomPlayer(), RandomPlayer(), nround=100)
+    # print play_gobang_rounds(RandomPlayer(), AIPlayer(1), nround=100)
+
+    # play_game(TicTacToe(), AIPlayer(-1), ManualPlayer())
+    print play_tictactoe_rounds(RandomPlayer(), AIPlayer(+1, 9), nround=100)

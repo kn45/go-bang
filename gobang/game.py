@@ -4,7 +4,7 @@ import common
 import random
 import sys
 from itertools import product
-from callback import AvlMoves
+from strategy import AvlMoves
 
 
 class Board(object):
