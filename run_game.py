@@ -42,4 +42,4 @@ if __name__ == '__main__':
     # print play_gobang_rounds(RandomPlayer(), AIPlayer(1), nround=100)
 
     # play_game(TicTacToe(), AIPlayer(-1), ManualPlayer())
-    print play_tictactoe_rounds(RandomPlayer(), AIPlayer(+1, 9), nround=100)
+    print play_tictactoe_rounds(RandomPlayer(), AIPlayer(+1), nround=100)
