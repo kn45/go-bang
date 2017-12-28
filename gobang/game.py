@@ -120,11 +120,18 @@ class GobangBoard(object):
         print self[(3, 4)]
 
 
+class GameStatus(object):
+    WIN1 = -1
+    DRAW = 0
+    WIN2 = +1
+    UNDERGOING = 2
+
+
 class Gobang(object):
     def __init__(self):
         self.__board = GobangBoard()
         self.__player = -1  # -1 or +1
-        self.__game_status = 2  # ±1 for each winner, 0 for draw, 2 for undergoing
+        self.__game_status = GameStatus.UNDERGOING
         self.__callbacks = {'AvlMoves': AvlMoves(self.__board)}
 
     def __check_win_status(self, pos):
@@ -150,12 +157,9 @@ class Gobang(object):
         return self.__player
 
     def __update_game_status(self, pos):
-        # ±1 each winner
-        #  0 draw
-        #  2 undergoing
         win_status = self.__check_win_status(pos)
         self.__game_status = win_status if win_status != 0 else \
-            (0 if self.__board.is_full() else 2)
+            (GameStatus.DRAW if self.__board.is_full() else GameStatus.UNDERGOING)
 
     def add_callback(self, **kwargs):
         for callback_name in kwargs:

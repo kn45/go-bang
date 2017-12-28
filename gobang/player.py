@@ -1,18 +1,66 @@
 # -*- coding=utf8 -*-
 
-from game import Gobang
+import copy
 import random
 from itertools import product
+from game import *
 
 
 class Player(object):
     def __init__(self, player_idx=None):
-        self.player_idx = player_idx
+        self.PLAYER = player_idx
 
     # @override
     def choose_best_move(self, game):
         pass
 
+class AiPlayer(Player):
+    def __init__(self, player_idx):
+        super(AiPlayer, self).__init__(player_idx)
+        self.MIN_VAL = -100
+        self.MAX_VAL = +100
+        self.__evaluate = lambda x, y: random.random()
+
+    def __max_move(self, game, level, alpha, beta):
+        # return the pos and best(max) value
+        # alpha is the best_value for now in a max_move
+        # beta is the best_value for now in a min_move
+        best_pos = None
+        best_value = self.MIN_VAL
+        if game.game_status != game.UNDERGOING:
+            return best_pos, self.__evaluate(game.board, self.PLAYER)
+        moves = game.get_available_moves()
+        for pos in moves:
+            game_after_move = copy.deepcopy(game)
+            game_after_move.move(pos)
+            min_value = self.__min_move(game_after_move, level-1, alpha, beta)
+            if min_value > best_value:
+                best_pos = pos
+                best_value = min_value
+            alpha = max(best_value, alpha)
+            if alpha >= beta:
+                break
+        return best_pos, best_value
+
+    def __min_move(self, game, level, alpha, beta):
+        # return the best(min) value
+        best_pos = None
+        best_value = self.MAX_VAL
+        if game.game_status != GameStatus.UNDERGOING:
+            return self.__evalute(game.board, self.PLAYER)
+        moves = game.get_available_moves()
+        for pos in moves:
+            game_after_move = copy.deepcopy(game)
+            game_after_move.move(pos)
+            _, max_value = self.max_move(game_after_move, level-1, alpha, beta)
+            # update best value and beta
+            if max_value < best_value:
+                best_pos = pos
+                best_value = max_value
+            beta = min(best_value, beta)
+            if beta <= alpha:
+                break
+        return best_value
 
 class RandomPlayer(Player):
     def choose_best_move(self, game):
