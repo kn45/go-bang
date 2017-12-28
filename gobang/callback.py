@@ -24,16 +24,17 @@ class AvlMoves(object):
                 self.__avl_moves.add((row, col))
 
     def __update(self, pos, min_radius, min_count):
-        # pos = None means search and update from scratch
-        # if the board is empty, just add the center point to available_moves
+        # case_1: pos is None, board is empty -> add center
+        # case_2: pos is None, board is not empty -> create from scratch
+        # case_3: pos not None -> add around
         if pos is None:
             stones = self.__board.all_stones
         else:
             stones = [pos]
-        if len(stones) <= 0:  # board is empty, just add center
+        if len(stones) <= 0:  # case_1
             board_center = self.__board.width / 2
             self.__avl_moves.add((board_center, board_center))
-        else:  # board is not empty, add around pos
+        else:  # case_2 & case_3
             while True:
                 for stone in stones:
                     self.__add_around(stone, min_radius)
@@ -48,6 +49,8 @@ class AvlMoves(object):
         mr = 2  # varies with strategy
         mc = 20  # varies with strategy
         self.__update(last_pos, mr, mc)
+        # remove newly placed stone from available_moves
+        self.__avl_moves.discard(last_pos)
 
     def _update_dbg(self, pos=None, min_radius=2, min_count=20):
         # for debug use
