@@ -11,7 +11,7 @@ def play_game(game, p1, p2, verbose=True):
     gprint(game.board)
     while game.game_status == GameStatus.UNDERGOING:
         player_idx = (game.player + 1) / 2  # (-1,+1) -> (0,1)
-        move, value = players[player_idx].choose_best_move(game)
+        move, value = players[player_idx].choose_best_move(game, True)
         succ = game.move(move)
         if not succ:
             gprint('Not available move')
