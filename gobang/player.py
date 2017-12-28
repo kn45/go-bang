@@ -14,6 +14,7 @@ class Player(object):
     def choose_best_move(self, game):
         pass
 
+
 class AiPlayer(Player):
     def __init__(self, player_idx):
         super(AiPlayer, self).__init__(player_idx)
@@ -66,6 +67,7 @@ class AiPlayer(Player):
     def choose_best_move(self, game):
         return self.__max_move(game, level=0, alpha=self.MIN_VAL, beta=self.MAX_VAL)
 
+
 class RandomPlayer(Player):
     def choose_best_move(self, game):
         avail_moves = game.get_available_moves()
@@ -77,20 +79,20 @@ class ManualPlayer(Player):
     def choose_best_move(self, game):
         move = raw_input('Input position, e.g. f11\n')
         row = int(move[1:])
-        if row < 1 or row > 15:
-            print 'Row should be within [1, 15]'
+        if row < 1 or row > game.board.width:
+            print 'Row should be within board'
             return self.choose_best_move(game)
         col = move[0].lower()
-        if col < 'a' or col > 'o':
-            print 'Column should be within [a, o]'
+        if col < 'a' or col > chr(ord('a')+game.board.width):
+            print 'Column should be within board'
             return self.choose_best_move(game)
-        pos = (15-row, ord(col)-ord('a'))
+        pos = (game.board.width-row, ord(col)-ord('a'))
         value = -999
         return pos, value
 
 
 if __name__ == '__main__':
-    game = Gobang()
+    game = GoBang()
     p1 = RandomPlayer()
     p3 = AiPlayer(-1)
     print p3.choose_best_move(game)

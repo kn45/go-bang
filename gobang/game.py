@@ -7,9 +7,9 @@ from itertools import product
 from callback import AvlMoves
 
 
-class GobangBoard(object):
-    def __init__(self):
-        self.__width = 15
+class Board(object):
+    def __init__(self, width):
+        self.__width = width
         # 0 for emply, ±1 for each player
         self.__layout = [[0] * self.__width for x in range(self.__width)]
         self.__sign = {-1: '●', 0: '┼', +1: 'o'}  # repr sign
@@ -21,7 +21,7 @@ class GobangBoard(object):
         for i, row in enumerate(self.__layout):
             str_repr += '%2d ' % (self.__width - i)
             str_repr += '─'.join([self.__sign[x] for x in row]) + '\n'
-        axis_x = [chr(x + ord('A')) for x in range(15)]
+        axis_x = [chr(x + ord('A')) for x in range(self.__width)]
         str_repr += ' ' * 3 + ' '.join(axis_x)
         return str_repr
 
@@ -66,10 +66,7 @@ class GobangBoard(object):
         return False if max(row, col) >= self.__width or min(row, col) < 0 else True
 
     def is_full(self):
-        return True if self.__capacity == self.__width ** 2 else False
-
-    def is_empty(self):
-        return True if self.__capacity <= 0 else False
+        return True if self.__capacity == 0 else False
 
     def place(self, pos, player):
         if pos in self.__all_stones:  # already placed
@@ -77,9 +74,9 @@ class GobangBoard(object):
         self.__set__layout(pos, player)
         return True
 
-    def max_abs_subsum(self, st_pos, ed_pos):
-        # return the 5-subsum in the line-shaped region with max abs
-        # return +5 or -5 means winning on this line
+    def max_abs_subsum(self, st_pos, ed_pos, npos):
+        # return the npos-subsum in the line-shaped region with max abs
+        # return +npos or -npos means winning on this line
         # st_pos and ed_pos must be in a line (diag line is ok)
         i, j = st_pos
         ed_i, ed_j = ed_pos
@@ -95,7 +92,7 @@ class GobangBoard(object):
             j = j + common.sign(ed_j - j)
             if self.is_pos_in_board((i, j)):
                 data_line.append(self.__layout[i][j])
-        sums = [sum(data_line[offset:offset+5]) for offset in range(5)]
+        sums = [sum(data_line[offset:offset+npos]) for offset in range(npos)]
         return common.max_abs(sums)
 
     def set_all(self, val=None):
@@ -115,9 +112,9 @@ class GobangBoard(object):
         print self
         self.set_all()
         print self
-        print self.max_abs_subsum((-3, 5), (5, 5))
-        print self[3][4]
-        print self[(3, 4)]
+        print self.max_abs_subsum((-1, 2), (2, 2), 3)
+        print self[1][2]
+        print self[(1, 2)]
 
 
 class GameStatus(object):
@@ -127,9 +124,10 @@ class GameStatus(object):
     UNDERGOING = 2
 
 
-class Gobang(object):
-    def __init__(self):
-        self.__board = GobangBoard()
+class Game(object):
+    def __init__(self, board_width, win_count):
+        self.__WIN_COUNT = win_count  # how many continous stones to win
+        self.__board = Board(board_width)
         self.__player = -1  # -1 or +1
         self.__game_status = GameStatus.UNDERGOING
         self.__callbacks = {'AvlMoves': AvlMoves(self.__board)}
@@ -138,11 +136,11 @@ class Gobang(object):
         # evaluate winner. ±1 - each winner; 0 - other case
         c_i, c_j = pos
         # check row direction
-        mass_row = self.__board.max_abs_subsum((c_i, c_j-4), (c_i, c_j+4))
-        mass_col = self.__board.max_abs_subsum((c_i-4, c_j), (c_i+4, c_j))
-        mass_diag = self.__board.max_abs_subsum((c_i-4, c_j-4), (c_i+4, c_j+4))
+        mass_row = self.__board.max_abs_subsum((c_i, c_j-4), (c_i, c_j+4), self.__WIN_COUNT)
+        mass_col = self.__board.max_abs_subsum((c_i-4, c_j), (c_i+4, c_j), self.__WIN_COUNT)
+        mass_diag = self.__board.max_abs_subsum((c_i-4, c_j-4), (c_i+4, c_j+4), self.__WIN_COUNT)
         max_abs_val = common.max_abs([mass_row, mass_col, mass_diag])
-        return common.sign(max_abs_val) if abs(max_abs_val) == 5 else 0
+        return common.sign(max_abs_val) if abs(max_abs_val) == self.__WIN_COUNT else 0
 
     @property
     def game_status(self):
@@ -184,16 +182,28 @@ class Gobang(object):
         return self.__callbacks['AvlMoves'].get_all()
 
 
-if __name__ == '__main__':
-    board = GobangBoard()
-    board.test()
+class GoBang(Game):
+    def __init__(self):
+        super(GoBang, self).__init__(board_width=15, win_count=5)
 
-    avl_moves = AvlMoves(GobangBoard())
+
+class TicTacToe(Game):
+    def __init__(self):
+        super(TicTacToe, self).__init__(board_width=3, win_count=3)
+
+
+if __name__ == '__main__':
+    board = Board(15)
+    board.test()
+    board2 = Board(3)
+    board2.test()
+
+    avl_moves = AvlMoves(Board(15))
     print avl_moves.get_all()
     avl_moves._update_dbg(pos=(3, 3), min_radius=1, min_count=0)
     print avl_moves.get_all()
 
-    game = Gobang()
+    game = GoBang()
     print game.get_available_moves()
     game.move((7, 7))
     print game.board
