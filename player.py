@@ -11,15 +11,23 @@ class Player(object):
     def __init__(self, player_idx=None):
         self.PLAYER = player_idx
 
-    # @override
     def choose_best_move(self, game):
-        pass
+        raise NotImplementedError
 
 
-class AIPlayer(Player):
+class TicTacToePlayer(Player):
     def __init__(self, player_idx):
-        super(AIPlayer, self).__init__(player_idx)
+        super(TicTacToePlayer, self).__init__(player_idx)
         self.__search = search.MinMax(evaluate.SimpleEndEval(), max_depth=9)
+
+    def choose_best_move(self, game):
+        return self.__search.search_best_move(game, eval_side=self.PLAYER)
+
+
+class GoBangPlayer(Player):
+    def __init__(self, player_idx):
+        super(GoBangPlayer, self).__init__(player_idx)
+        self.__search = search.MinMax(evaluate.SimpleEndEval(), max_depth=3)
 
     def choose_best_move(self, game):
         return self.__search.search_best_move(game, eval_side=self.PLAYER)
@@ -51,5 +59,6 @@ class ManualPlayer(Player):
 if __name__ == '__main__':
     game = TicTacToe()
     p1 = RandomPlayer()
-    p3 = AIPlayer(-1)
+    p3 = TicTacToePlayer(-1)
+    print dir(p3)
     print p3.choose_best_move(game)

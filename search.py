@@ -3,9 +3,8 @@ from game import GameStatus
 
 
 class Search(object):
-    # @override
     def search_best_move(self, game, eval_side):
-        pass
+        raise NotImplementedError
 
 
 class MinMax(Search):

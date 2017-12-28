@@ -11,9 +11,8 @@ class Evaluate(object):
     def MAX_VAL(self):
         return self.__MAX_VAL
 
-    # @override
     def evaluate(self, **kwargs):
-        return 0
+        raise NotImplementedError
 
 
 class SimpleEndEval(Evaluate):
