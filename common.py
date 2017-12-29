@@ -1,3 +1,6 @@
+import conf
+
+
 def sign(x):
     return 1 if x > 0 else -1 if x < 0 else 0
 
@@ -26,13 +29,34 @@ def cprint(verbose):
     return _cprint
 
 
+def dprint(content):
+    # debug print
+    if conf.debug:
+        print content
+
+
+def pos2h(pos, width):
+    i, j = pos
+    stri = str(width - i)
+    strj = chr(ord('A') + j)
+    return strj + stri
+
+
+def h2pos(hstr, width):
+    row = width - int(hstr[1:])
+    col = ord(hstr[0].lower()) - ord('a')
+    return (row, col)
+
+
 if __name__ == '__main__':
     print sign(4)
     print sign(0)
     print sign(-4)
     print max_abs([-5, 6])
     print max_abs([-5, 3])
+    dprint('h')
     gprint = cprint(True)
-    gprint('h')
-    gprint = cprint(False)
     gprint('g')
+    gprint = cprint(False)
+    gprint('i')
+    print pos2h((1, 1), 15)

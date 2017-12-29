@@ -1,4 +1,5 @@
 import copy
+from common import dprint
 from game import GameStatus
 
 
@@ -23,6 +24,7 @@ class MinMax(Search):
         if game.game_status != GameStatus.UNDERGOING or abs(level) > self.__MAX_DEPTH:
             return best_pos, self.__evaluate.evaluate(game=game, eval_side=self.__eval_side)
         moves = game.get_available_moves()
+        dprint('')
         for pos in moves:
             game_after_move = copy.deepcopy(game)
             game_after_move.move(pos)
