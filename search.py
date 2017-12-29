@@ -25,8 +25,10 @@ class MinMax(Search):
             return best_pos, self.__evaluate.evaluate(game=game, eval_side=self.__eval_side)
         moves = game.get_available_moves()
         if level == 0:
-            dprint(' '.join([pos2h(p, game.board.width) for p in moves]))
+            dprint('avl moves: ' + ' '.join([pos2h(p, game.board.width) for p in moves]))
         for pos in moves:
+            if level == 0:
+                dprint(pos2h(pos, game.board.width) + ' ', False)
             game_after_move = copy.deepcopy(game)
             game_after_move.move(pos)
             min_value = self.__min_move(game_after_move, level-1, alpha, beta)

@@ -1,4 +1,5 @@
 import conf
+import sys
 
 
 def sign(x):
@@ -29,10 +30,13 @@ def cprint(verbose):
     return _cprint
 
 
-def dprint(content):
+def dprint(content, new_line=True):
     # debug print
     if conf.debug:
-        print content
+        if new_line:
+            print content
+        else:
+            sys.stdout.write(content)
 
 
 def pos2h(pos, width):
