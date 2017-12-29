@@ -4,7 +4,7 @@ import conf
 import evaluate
 import random
 import search
-from common import dprint, h2pos
+from common import dprint, h2pos, pos2h
 from itertools import product
 from game import *
 
@@ -35,9 +35,9 @@ class GoBangPlayer(Player):
 
     def choose_best_move(self, game, *args):
         dprint('considering...')
-        best = self.__search.search_best_move(game, eval_side=self.PLAYER)
-        dprint('my move: ' + str(best))
-        return best
+        pos, value = self.__search.search_best_move(game, eval_side=self.PLAYER)
+        dprint('\t'.join(['my move:', pos2h(pos, game.board.width), str(value)]))
+        return pos, value
 
 
 class RandomPlayer(Player):
