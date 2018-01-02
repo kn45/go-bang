@@ -2,6 +2,34 @@ from itertools import product
 
 
 class AvlMoves(object):
+    def __init__(self):
+        self.__MIN_COUNT = 20
+        self.__MIN_RADIUS = 2
+
+    def __has_neighbour(self, pos, board, radius):
+        for offset in product(range(radius), range(radius)):
+            npos = tuple([i+j for i, j in zip(offset, pos)])
+            if board.is_pos_in_board(npos) and board[npos] != '0':
+                return True
+        return False
+
+    def __all_in_avail(self, moves, board):
+        # whether all the empty positions are in available moves
+        return True if len(moves) >= board.capacity else False
+
+    def gen_moves(board, radius=self.__MIN_RADIUS):
+        while True:
+            moves = []
+            for pos in product(range(board.width), range(board.width)):
+                if self.__has_neighbour(pos, board, radius):
+                    moves.append(pos)
+            if self.__all_in_avail(moves, board) or \
+                    len(moves) >= self.__MIN_COUNT:
+                return moves
+            radius += 1
+
+
+class AvlMoves(object):
     """Available moves is an independent strategy from the game itself.
     """
     def __init__(self, board):
