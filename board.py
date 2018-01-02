@@ -3,6 +3,7 @@ import common
 import random
 from itertools import product
 
+
 class Board(object):
     def __init__(self, width):
         self.__width = width
@@ -70,6 +71,12 @@ class Board(object):
         if pos in self.__all_stones:  # already placed
             return False
         self.__set__layout(pos, player)
+        return True
+
+    def undo_place(self, pos):
+        if pos not in self.__all_stones:  # not placed
+            return False
+        self.__set__layout(pos, 0)
         return True
 
     def max_abs_subsum(self, st_pos, ed_pos, npos):

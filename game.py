@@ -19,7 +19,7 @@ class Game(object):
         self.__WIN_COUNT = win_count  # how many continous stones to win
         self.__board = board.Board(board_width)
         self.__player = -1  # -1 or +1
-        self.__game_status = GameStatus.UNDERGOING
+        self.__stone_history = []
 
     def __check_win_status(self, pos):
         # evaluate winner. ±1 - each winner; 0 - other case
@@ -46,7 +46,10 @@ class Game(object):
 
     @property
     def game_status(self):
-        return self.__game_status
+        if len(self.__stone_history) == 0:
+            return GameStatus.UNDERGOING
+        else:
+            return self.__get_game_status(self.__stone_history[-1])
 
     @property
     def board(self):
@@ -56,18 +59,28 @@ class Game(object):
     def player(self):
         return self.__player
 
-    def __update_game_status(self, pos):
+    def __get_game_status(self, pos):
         win_status = self.__check_win_status(pos)
-        self.__game_status = win_status if win_status != 0 else \
+        return win_status if win_status != 0 else \
             (GameStatus.DRAW if self.__board.is_full() else GameStatus.UNDERGOING)
 
     def move(self, pos):
         succ = self.__board.place(pos, self.__player)
         if not succ:
             return False
-        # update game status
-        self.__update_game_status(pos)
+        self.__stone_history.append(pos)
         # switch player
+        self.__player *= -1
+        return True
+
+    def undo_move(self):
+        if len(self.__stone_history) == 0:
+            return False
+        last_move = self.__stone_history[-1]
+        succ = self.__board.undo_place(last_move)
+        if not succ:
+            return False
+        self.__stone_history.pop()
         self.__player *= -1
         return True
 
@@ -87,4 +100,8 @@ if __name__ == '__main__':
     game.move((7, 7))
     print game.board
     game.move((8, 9))
-    print game.board
+    print game.board, game._Game__player
+    print game._Game__stone_history
+    game.undo_move()
+    print game.board, game._Game__player
+    print game._Game__stone_history

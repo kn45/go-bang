@@ -1,5 +1,6 @@
 from game import GameStatus
 
+
 class Evaluate(object):
     def __init__(self, min_val, max_val):
         self.__MIN_VAL = min_val

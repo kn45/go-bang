@@ -26,13 +26,14 @@ class MinMax(Search):
             return best_pos, self.__evaluate.evaluate(game=game, eval_side=self.__eval_side)
         moves = self.__strategy.gen_moves(game.board)
         if level == 0:
-            common.dprint('avl moves: ' + ' '.join([common.pos2h(p, game.board.width) for p in moves]))
+            common.dprint(
+                'avl moves: ' + ' '.join([common.pos2h(p, game.board.width) for p in moves]))
         for pos in moves:
             if level == 0:
                 common.dprint(common.pos2h(pos, game.board.width) + ' ', False)
-            game_after_move = copy.deepcopy(game)
-            game_after_move.move(pos)
-            min_value = self.__min_move(game_after_move, level-1, alpha, beta)
+            game.move(pos)
+            min_value = self.__min_move(game, level-1, alpha, beta)
+            game.undo_move()
             if min_value > best_value:
                 best_pos = pos
                 best_value = min_value
@@ -49,9 +50,9 @@ class MinMax(Search):
             return self.__evaluate.evaluate(game=game, eval_side=self.__eval_side)
         moves = self.__strategy.gen_moves(game.board)
         for pos in moves:
-            game_after_move = copy.deepcopy(game)
-            game_after_move.move(pos)
-            _, max_value = self.__max_move(game_after_move, level-1, alpha, beta)
+            game.move(pos)
+            _, max_value = self.__max_move(game, level-1, alpha, beta)
+            game.undo_move()
             # update best value and beta
             if max_value < best_value:
                 best_pos = pos
