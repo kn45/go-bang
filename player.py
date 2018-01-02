@@ -1,10 +1,11 @@
 # -*- coding=utf8 -*-
 
+import common
 import conf
 import evaluate
 import random
 import search
-from common import dprint, h2pos, pos2h
+import strategy
 from itertools import product
 from game import *
 
@@ -21,7 +22,9 @@ class TicTacToePlayer(Player):
     def __init__(self, player_idx):
         super(TicTacToePlayer, self).__init__(player_idx)
         self.__search = search.MinMax(
-            evaluate.SimpleEndEval(), max_depth=conf.tictactoe_minmax_depth)
+            evaluate.SimpleEndEval(),
+            strategy.NearbyMoves(),
+            max_depth=conf.tictactoe_minmax_depth)
 
     def choose_best_move(self, game, *args):
         return self.__search.search_best_move(game, eval_side=self.PLAYER)
@@ -31,18 +34,20 @@ class GoBangPlayer(Player):
     def __init__(self, player_idx):
         super(GoBangPlayer, self).__init__(player_idx)
         self.__search = search.MinMax(
-            evaluate.SimpleEndEval(), max_depth=conf.gobang_minmax_depth)
+            evaluate.SimpleEndEval(),
+            strategy.NearbyMoves(),
+            max_depth=conf.gobang_minmax_depth)
 
     def choose_best_move(self, game, *args):
-        dprint('considering...')
+        common.dprint('considering...')
         pos, value = self.__search.search_best_move(game, eval_side=self.PLAYER)
-        dprint('\t'.join(['my move:', pos2h(pos, game.board.width), str(value)]))
+        common.dprint('\t'.join(['my move:', common.pos2h(pos, game.board.width), str(value)]))
         return pos, value
 
 
 class RandomPlayer(Player):
     def choose_best_move(self, game, *args):
-        avail_moves = game.get_available_moves()
+        avail_moves = strategy.NearbyMoves().gen_moves(game.board)
         value = -999
         return avail_moves[int(random.random()*len(avail_moves))], value
 
@@ -50,7 +55,7 @@ class RandomPlayer(Player):
 class ManualPlayer(Player):
     def choose_best_move(self, game, *args):
         move = raw_input('Input position, e.g. f11\n')
-        pos = h2pos(move, game.board.width)
+        pos = common.h2pos(move, game.board.width)
         if not game.board.is_pos_in_board(pos):
             print 'Position should be within board'
             return self.choose_best_move(game)

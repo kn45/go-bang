@@ -1,5 +1,5 @@
+import common
 import copy
-from common import dprint, pos2h
 from game import GameStatus
 
 
@@ -9,11 +9,12 @@ class Search(object):
 
 
 class MinMax(Search):
-    def __init__(self, evaluate, max_depth):
+    def __init__(self, evaluate, strategy, max_depth):
         self.__MIN_VAL = evaluate.MIN_VAL
         self.__MAX_VAL = evaluate.MAX_VAL
-        self.__evaluate = evaluate
         self.__MAX_DEPTH = max_depth
+        self.__evaluate = evaluate
+        self.__strategy = strategy
 
     def __max_move(self, game, level, alpha, beta):
         # return the pos and best(max) value
@@ -23,12 +24,12 @@ class MinMax(Search):
         best_value = self.__MIN_VAL
         if game.game_status != GameStatus.UNDERGOING or abs(level) > self.__MAX_DEPTH:
             return best_pos, self.__evaluate.evaluate(game=game, eval_side=self.__eval_side)
-        moves = game.get_available_moves()
+        moves = self.__strategy.gen_moves(game.board)
         if level == 0:
-            dprint('avl moves: ' + ' '.join([pos2h(p, game.board.width) for p in moves]))
+            common.dprint('avl moves: ' + ' '.join([common.pos2h(p, game.board.width) for p in moves]))
         for pos in moves:
             if level == 0:
-                dprint(pos2h(pos, game.board.width) + ' ', False)
+                common.dprint(common.pos2h(pos, game.board.width) + ' ', False)
             game_after_move = copy.deepcopy(game)
             game_after_move.move(pos)
             min_value = self.__min_move(game_after_move, level-1, alpha, beta)
@@ -46,7 +47,7 @@ class MinMax(Search):
         best_value = self.__MAX_VAL
         if game.game_status != GameStatus.UNDERGOING or abs(level) > self.__MAX_DEPTH:
             return self.__evaluate.evaluate(game=game, eval_side=self.__eval_side)
-        moves = game.get_available_moves()
+        moves = self.__strategy.gen_moves(game.board)
         for pos in moves:
             game_after_move = copy.deepcopy(game)
             game_after_move.move(pos)
@@ -62,4 +63,6 @@ class MinMax(Search):
 
     def search_best_move(self, game, eval_side):
         self.__eval_side = eval_side
-        return self.__max_move(game, level=0, alpha=self.__MIN_VAL, beta=self.__MAX_VAL)
+        res = self.__max_move(game, level=0, alpha=self.__MIN_VAL, beta=self.__MAX_VAL)
+        common.dprint(str(res))
+        return res
