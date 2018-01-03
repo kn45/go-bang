@@ -31,6 +31,22 @@ class SimpleEndEval(Evaluate):
             return 0
 
 
+class GoBangEval(Evaluate):
+    def __init__(self):
+        super(SimpleEndEval, self).__init__(-1, +1000000)
+
+    def evaluate(self, **kwargs):
+        game = kwargs.get('game')
+        eval_side = kwargs.get('eval_side')
+        score1 = self.__MIN_VAL
+        for pat in xxxx:
+            sc1 = gobang_pattern.match_pattern(pat, eval_side)
+            sc2 = gobang_pattern.match_pattern(pat, -1*eval_side)
+            score1 = max(score1, sc1)
+            score2 = max(score2, sc2)
+        return score1 - score2
+
+
 if __name__ == '__main__':
     s = SimpleEndEval()
     print dir(s)
