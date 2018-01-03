@@ -100,30 +100,10 @@ class Board(object):
         sums = [sum(data_line[offset:offset+npos]) for offset in range(npos)]
         return common.max_abs(sums)
 
-    def set_all(self, val=None):
-        # set all the board to a certain value. if value is None, random all
-        # mainly for test use
-        for i, j in product(range(self.__width), range(self.__width)):
-            if val is not None:
-                self.__set__layout((i, j), val)
-            else:
-                self.__set__layout((i, j), int(random.random()*3)-1)
-
-    def test(self):
-        print self
-        self.set_all(val=1)
-        print self
-        self.set_all(val=-1)
-        print self
-        self.set_all()
-        print self
-        print self.max_abs_subsum((-1, 2), (2, 2), 3)
-        print self[1][2]
-        print self[(1, 2)]
-
 
 if __name__ == '__main__':
     board = Board(15)
-    board.test()
+    print board.max_abs_subsum((-1, 2), (2, 2), 3)
+    print board[1][2]
     board2 = Board(3)
-    board2.test()
+    print board2
