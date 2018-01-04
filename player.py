@@ -5,7 +5,7 @@ import conf
 import evaluate
 import random
 import search
-import strategy
+import policy
 from itertools import product
 from game import *
 
@@ -23,7 +23,7 @@ class TicTacToePlayer(Player):
         super(TicTacToePlayer, self).__init__(player_idx)
         self.__search = search.MinMax(
             evaluate.SimpleEndEval(),
-            strategy.NearbyMoves(),
+            policy.NearbyMoves(),
             max_depth=conf.tictactoe_minmax_depth)
 
     def choose_best_move(self, game, *args):
@@ -35,7 +35,7 @@ class GoBangPlayer(Player):
         super(GoBangPlayer, self).__init__(player_idx)
         self.__search = search.MinMax(
             evaluate.SimpleEndEval(),
-            strategy.NearbyMoves(),
+            policy.NearbyMoves(),
             max_depth=conf.gobang_minmax_depth)
 
     def choose_best_move(self, game, *args):
@@ -47,7 +47,7 @@ class GoBangPlayer(Player):
 
 class RandomPlayer(Player):
     def choose_best_move(self, game, *args):
-        avail_moves = strategy.NearbyMoves().gen_moves(game.board)
+        avail_moves = policy.NearbyMoves().gen_moves(game.board)
         value = -999
         return avail_moves[int(random.random()*len(avail_moves))], value
 

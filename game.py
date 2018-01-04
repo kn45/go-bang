@@ -26,23 +26,28 @@ class Game(object):
         c_i, c_j = pos
         # check row direction
         mass_row = self.__board.max_abs_subsum(
-            (c_i, c_j-self.__WIN_COUNT+1),
-            (c_i, c_j+self.__WIN_COUNT-1),
-            self.__WIN_COUNT)
+            (c_i, c_j-self.__WIN_COUNT+1), (c_i, c_j+self.__WIN_COUNT-1), self.__WIN_COUNT)
+        if abs(mass_row) == self.__WIN_COUNT:
+            return common.sign(mass_row)
+
         mass_col = self.__board.max_abs_subsum(
-            (c_i-self.__WIN_COUNT+1, c_j),
-            (c_i+self.__WIN_COUNT-1, c_j),
-            self.__WIN_COUNT)
+            (c_i-self.__WIN_COUNT+1, c_j), (c_i+self.__WIN_COUNT-1, c_j), self.__WIN_COUNT)
+        if abs(mass_col) == self.__WIN_COUNT:
+            return common.sign(mass_col)
+
         mass_diag1 = self.__board.max_abs_subsum(
             (c_i-self.__WIN_COUNT+1, c_j-self.__WIN_COUNT+1),
-            (c_i+self.__WIN_COUNT-1, c_j+self.__WIN_COUNT-1),
-            self.__WIN_COUNT)
+            (c_i+self.__WIN_COUNT-1, c_j+self.__WIN_COUNT-1), self.__WIN_COUNT)
+        if abs(mass_diag1) == self.__WIN_COUNT:
+            return common.sign(mass_diag1)
+
         mass_diag2 = self.__board.max_abs_subsum(
             (c_i+self.__WIN_COUNT-1, c_j-self.__WIN_COUNT+1),
-            (c_i-self.__WIN_COUNT+1, c_j+self.__WIN_COUNT-1),
-            self.__WIN_COUNT)
-        max_abs_val = common.max_abs([mass_row, mass_col, mass_diag1, mass_diag2])
-        return common.sign(max_abs_val) if abs(max_abs_val) == self.__WIN_COUNT else 0
+            (c_i-self.__WIN_COUNT+1, c_j+self.__WIN_COUNT-1), self.__WIN_COUNT)
+        if abs(mass_diag2) == self.__WIN_COUNT:
+            return common.sign(mass_diag2)
+
+        return 0
 
     @property
     def game_status(self):

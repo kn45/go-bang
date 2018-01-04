@@ -35,3 +35,13 @@ class NearbyMoves(object):
                     len(moves) >= self.__MIN_COUNT:
                 return list(moves)
             radius += 1
+
+
+class AllMoves(object):
+    def gen_moves(self, board):
+        res = []
+        for pos in product(range(board.width), range(board.width)):
+            if pos not in board.all_stones:
+                res.append(res)
+        return res
+
