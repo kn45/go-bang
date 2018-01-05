@@ -58,6 +58,11 @@ class Board(object):
     def all_stones(self):
         return list(self.__all_stones)
 
+    @property
+    def all_availables(self):
+        all_moves = set(product(range(self.__width), range(self.__width)))
+        return list(all_moves - self.__all_stones)
+
     def is_pos_in_board(self, pos):
         return False if max(pos) >= self.__width or min(pos) < 0 else True
 

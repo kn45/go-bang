@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from mcts import *
 from game import *
 from player import *
 from common import cprint
@@ -45,6 +46,6 @@ if __name__ == '__main__':
     # play_game(TicTacToe(), ManualPlayer(), TicTacToePlayer(+1))
     # play_game(TicTacToe(), TicTacToePlayer(-1), ManualPlayer())
     # play_game(TicTacToe(), RandomPlayer(), TicTacToePlayer(+1))
-    # play_game(TicTacToe(), TicTacToePlayer(-1), RandomPlayer())
+    # play_game(TicTacToe(), MCTSPlayer(-1), RandomPlayer())
     # print play_tictactoe_rounds(RandomPlayer(), TicTacToePlayer(+1), nround=100)
-    print play_tictactoe_rounds(TicTacToePlayer(-1), RandomPlayer(), nround=10)
+    print play_tictactoe_rounds(MCTSPlayer(-1), RandomPlayer(), nround=100)
