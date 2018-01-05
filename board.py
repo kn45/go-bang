@@ -105,6 +105,32 @@ class Board(object):
         sums = [sum(data_line[offset:offset+npos]) for offset in range(npos)]
         return common.max_abs(sums)
 
+    def __add_around(self, moves, pos, radius):
+        # update available moves around the position
+        c_i, c_j = pos
+        update_range = range(c_i-radius, c_i+radius+1)
+        for row, col in product(update_range, update_range):
+            if not self.is_pos_in_board((row, col)):
+                continue
+            if self[row][col] == 0:
+                moves.add((row, col))
+        return moves
+
+    @property
+    def nearby_availables(self):
+        MIN_COUNT = 20
+        radius = 2
+        if self.is_empty():
+            center = int(self.width / 2)
+            return [(center, center)]
+        moves = set([])
+        while True:
+            for pos in self.all_stones:
+                moves = self.__add_around(moves, pos, radius)
+            if len(moves) >= self.capacity or len(moves) >= MIN_COUNT:
+                return list(moves)
+            radius += 1
+
 
 if __name__ == '__main__':
     board = Board(15)

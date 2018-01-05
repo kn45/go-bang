@@ -41,6 +41,7 @@ def play_tictactoe_rounds(p1, p2, nround=100):
 if __name__ == '__main__':
     # play_game(GoBang(), RandomPlayer(), ManualPlayer())
     # play_game(GoBang(), RandomPlayer(), GoBangPlayer(1))
+    play_game(GoBang(), RandomPlayer(), MCTSPlayer(+1))
     # print play_gobang_rounds(RandomPlayer(), GoBangPlayer(1), nround=10)
 
     # play_game(TicTacToe(), ManualPlayer(), TicTacToePlayer(+1))
@@ -48,4 +49,4 @@ if __name__ == '__main__':
     # play_game(TicTacToe(), RandomPlayer(), TicTacToePlayer(+1))
     # play_game(TicTacToe(), MCTSPlayer(-1), RandomPlayer())
     # print play_tictactoe_rounds(RandomPlayer(), TicTacToePlayer(+1), nround=100)
-    print play_tictactoe_rounds(MCTSPlayer(-1), RandomPlayer(), nround=100)
+    # print play_tictactoe_rounds(MCTSPlayer(-1), RandomPlayer(), nround=100)

@@ -63,7 +63,7 @@ class MCTS(object):
             value = (game.player*game.game_status + 1.0) / 2.0  # self win probability
         else:  # not end
             # expansion
-            node.expand(game.board.all_availables)
+            node.expand(game.board.nearby_availables)
             children = node._children.items()
             act, node2explore = children[int(random.random()*len(children))]
             # simulation
@@ -76,13 +76,15 @@ class MCTS(object):
         # self win probability
         player = game.player
         while game.game_status == GameStatus.UNDERGOING:
-            actions = game.board.all_availables
+            actions = game.board.nearby_availables
             act = actions[int(random.random()*len(actions))]
             game.move(act)
         return (player*game.game_status + 1.0) / 2.0
 
     def get_visit_prob(self, game):
-        for _ in range(self._nrollout):  # do nround of MC search
+        for n in range(self._nrollout):  # do nround of MC search
+            if n % 100 == 0:
+                print n
             self._search(copy.deepcopy(game))
         return [(act, child._nvisit/self._root._nvisit)
                 for act, child in self._root._children.items()]
@@ -98,10 +100,6 @@ class MCTSPlayer(object):
 
     def choose_best_move(self, game, *args):
         move_probs = self._mcts.get_visit_prob(game)
-        # choose move with maximum nvisit
-        # print move_probs
-        # print [(x._nwin, x._nvisit) for m, x in self._mcts._root._children.items()]
-        # print self._mcts._root._nwin, self._mcts._root._nvisit
         move, prob = max(move_probs, key=lambda x: x[1])
         self._mcts.reset()
         return move, prob
