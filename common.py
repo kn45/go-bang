@@ -1,5 +1,4 @@
 # -*- coding=utf8 -*-
-import conf
 import sys
 
 
@@ -29,15 +28,6 @@ def cprint(verbose):
         if verbose:
             print content
     return _cprint
-
-
-def dprint(content, new_line=True):
-    # debug print
-    if conf.debug:
-        if new_line:
-            print content
-        else:
-            sys.stdout.write(content)
 
 
 def pos2h(pos, width):
@@ -74,7 +64,6 @@ if __name__ == '__main__':
     print sign(-4)
     print max_abs([-5, 6])
     print max_abs([-5, 3])
-    dprint('h')
     gprint = cprint(True)
     gprint('g')
     gprint = cprint(False)
