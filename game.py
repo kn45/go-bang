@@ -87,14 +87,3 @@ class GoBang(Game):
 class TicTacToe(Game):
     def __init__(self):
         super(TicTacToe, self).__init__(board_width=3, win_count=3)
-
-
-if __name__ == '__main__':
-    game = GoBang()
-    game.move((7, 7))
-    print game.board
-    game.move((8, 9))
-    print game.board, game._Game__player
-    print game._Game__stone_history
-    print game.board, game._Game__player
-    print game._Game__stone_history

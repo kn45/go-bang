@@ -122,10 +122,3 @@ class Board(object):
             if len(moves) >= self.capacity or len(moves) >= MIN_COUNT:
                 return list(moves)
             radius += 1
-
-
-if __name__ == '__main__':
-    board = Board(15)
-    print board.max_abs_subsum((-1, 2), (2, 2), 3)
-    board2 = Board(3)
-    print board2

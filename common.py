@@ -42,6 +42,7 @@ def h2pos(hstr, width):
     col = ord(hstr[0].lower()) - ord('a')
     return (row, col)
 
+
 def draw_progress(iteration, total, pref='Progress:', suff='',
                   decimals=1, barlen=50):
     """Call in a loop to create terminal progress bar
@@ -56,16 +57,3 @@ def draw_progress(iteration, total, pref='Progress:', suff='',
     if iteration == total:
         sys.stderr.write('\n')
     sys.stderr.flush()
-
-
-if __name__ == '__main__':
-    print sign(4)
-    print sign(0)
-    print sign(-4)
-    print max_abs([-5, 6])
-    print max_abs([-5, 3])
-    gprint = cprint(True)
-    gprint('g')
-    gprint = cprint(False)
-    gprint('i')
-    print pos2h((1, 1), 15)
