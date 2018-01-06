@@ -17,31 +17,31 @@ class GameStatus(object):
 class Game(object):
     def __init__(self, board_width, win_count):
         self.__WIN_COUNT = win_count  # how many continous stones to win
-        self.__board = board.Board(board_width)
-        self.__player = -1  # -1 or +1
-        self.__stone_history = []
+        self.player = -1  # -1 or +1
+        self.stone_history = []
+        self.board = board.Board(board_width)
 
     def __check_win_status(self, pos):
         # evaluate winner. ±1 - each winner; 0 - other case
         c_i, c_j = pos
         # check row direction
-        mass_row = self.__board.max_abs_subsum(
+        mass_row = self.board.max_abs_subsum(
             (c_i, c_j-self.__WIN_COUNT+1), (c_i, c_j+self.__WIN_COUNT-1), self.__WIN_COUNT)
         if abs(mass_row) == self.__WIN_COUNT:
             return common.sign(mass_row)
 
-        mass_col = self.__board.max_abs_subsum(
+        mass_col = self.board.max_abs_subsum(
             (c_i-self.__WIN_COUNT+1, c_j), (c_i+self.__WIN_COUNT-1, c_j), self.__WIN_COUNT)
         if abs(mass_col) == self.__WIN_COUNT:
             return common.sign(mass_col)
 
-        mass_diag1 = self.__board.max_abs_subsum(
+        mass_diag1 = self.board.max_abs_subsum(
             (c_i-self.__WIN_COUNT+1, c_j-self.__WIN_COUNT+1),
             (c_i+self.__WIN_COUNT-1, c_j+self.__WIN_COUNT-1), self.__WIN_COUNT)
         if abs(mass_diag1) == self.__WIN_COUNT:
             return common.sign(mass_diag1)
 
-        mass_diag2 = self.__board.max_abs_subsum(
+        mass_diag2 = self.board.max_abs_subsum(
             (c_i+self.__WIN_COUNT-1, c_j-self.__WIN_COUNT+1),
             (c_i-self.__WIN_COUNT+1, c_j+self.__WIN_COUNT-1), self.__WIN_COUNT)
         if abs(mass_diag2) == self.__WIN_COUNT:
@@ -51,31 +51,23 @@ class Game(object):
 
     @property
     def game_status(self):
-        if len(self.__stone_history) == 0:
+        if len(self.stone_history) == 0:
             return GameStatus.UNDERGOING
         else:
-            return self.__get_game_status(self.__stone_history[-1])
+            return self._get_game_status(self.stone_history[-1])
 
-    @property
-    def board(self):
-        return self.__board
-
-    @property
-    def player(self):
-        return self.__player
-
-    def __get_game_status(self, pos):
+    def _get_game_status(self, pos):
         win_status = self.__check_win_status(pos)
         return win_status if win_status != 0 else \
-            (GameStatus.DRAW if self.__board.is_full() else GameStatus.UNDERGOING)
+            (GameStatus.DRAW if self.board.is_full() else GameStatus.UNDERGOING)
 
     def move(self, pos):
-        succ = self.__board.place(pos, self.__player)
+        succ = self.board.place(pos, self.player)
         if not succ:
             return False
-        self.__stone_history.append(pos)
+        self.stone_history.append(pos)
         # switch player
-        self.__player *= -1
+        self.player *= -1
         return True
 
 
