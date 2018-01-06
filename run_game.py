@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from mcts import *
+from uct import *
 from game import *
 from player import *
 from common import cprint

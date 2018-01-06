@@ -96,11 +96,11 @@ class MCTS(object):
 
 class MCTSPlayer(object):
     def __init__(self, player_idx):
-        self._mcts = MCTS(nrollout=4000)
+        self._uct = MCTS(nrollout=4000)
         self._player_idx = player_idx
 
     def choose_best_move(self, game, *args):
-        move_probs = self._mcts.get_visit_prob(game)
+        move_probs = self._uct.get_visit_prob(game)
         move, prob = max(move_probs, key=lambda x: x[1])
-        self._mcts.reset()
+        self._uct.reset()
         return move, prob
