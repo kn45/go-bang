@@ -57,7 +57,7 @@ class Board(object):
         return list(all_moves - self.all_stones)
 
     def is_pos_in_board(self, pos):
-        return False if max(pos) >= self.__width or min(pos) < 0 else True
+        return True if 0 <= pos[0] < self.__width and 0 <= pos[1] < self.__width else False
 
     def is_full(self):
         return True if self.__capacity == 0 else False
