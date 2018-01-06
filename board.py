@@ -6,75 +6,45 @@ from itertools import product
 
 class Board(object):
     def __init__(self, width):
-        self.__width = width
-        self.__sign = {-1: '●', 0: '┼', +1: 'o'}  # repr sign
-        self.__capacity = self.__width ** 2  # how many empty positions
+        self.width = width
+        self.capacity = self.width ** 2  # how many empty positions
         # 0 for emply, ±1 for each player
-        self._layout = [[0] * self.__width for x in range(self.__width)]
+        self._layout = [[0] * self.width for x in range(self.width)]
         self.all_stones = set([])
 
     def __str__(self):
+        SIGN = {-1: '●', 0: '┼', +1: 'o'}  # repr sign
         str_repr = ''
         for i, row in enumerate(self._layout):
-            str_repr += '%2d ' % (self.__width - i)
-            str_repr += '─'.join([self.__sign[x] for x in row]) + '\n'
-        axis_x = [chr(x + ord('A')) for x in range(self.__width)]
+            str_repr += '%2d ' % (self.width - i)
+            str_repr += '─'.join([SIGN[x] for x in row]) + '\n'
+        axis_x = [chr(x + ord('A')) for x in range(self.width)]
         str_repr += ' ' * 3 + ' '.join(axis_x)
         return str_repr
 
     def __hash__(self):
         return hash('|'.join(['|'.join(map(str, x)) for x in self._layout]))
 
-    def _set_layout(self, pos, val):
-        # all layout set operation should use this func
-        # including placing and REMOVING
-        if not self.is_pos_in_board(pos):
-            raise Exception('Position out of board range')
-        if val not in self.__sign:
-            raise ValueError('Not available board value')
-        i, j = pos
-        # update capacity. 0 -> ±1 or ±1 -> 0 would cause capacity change
-        self.__capacity += abs(self._layout[i][j]) - abs(val)
-        # update all_ponits
-        if val == 0:
-            self.all_stones.discard((i, j))
-        else:
-            self.all_stones.add((i, j))
-        # DO!
-        self._layout[i][j] = val
-
-    @property
-    def capacity(self):
-        return self.__capacity
-
-    @property
-    def width(self):
-        return self.__width
-
     @property
     def all_availables(self):
-        all_moves = set(product(range(self.__width), range(self.__width)))
+        all_moves = set(product(range(self.width), range(self.width)))
         return list(all_moves - self.all_stones)
 
     def is_pos_in_board(self, pos):
-        return True if 0 <= pos[0] < self.__width and 0 <= pos[1] < self.__width else False
+        return True if 0 <= pos[0] < self.width and 0 <= pos[1] < self.width else False
 
     def is_full(self):
-        return True if self.__capacity == 0 else False
+        return True if self.capacity == 0 else False
 
     def is_empty(self):
-        return True if self.__capacity == self.__width ** 2 else False
+        return True if self.capacity == self.width ** 2 else False
 
     def place(self, pos, player):
-        if pos in self.all_stones:  # already placed
-            return False
-        self._set_layout(pos, player)
-        return True
-
-    def undo_place(self, pos):
-        if pos not in self.all_stones:  # not placed
-            return False
-        self._set_layout(pos, 0)
+        i, j = pos
+        self.capacity -= 1
+        self.all_stones.add((i, j))
+        # DO!
+        self._layout[i][j] = player
         return True
 
     def max_abs_subsum(self, st_pos, ed_pos, npos):
