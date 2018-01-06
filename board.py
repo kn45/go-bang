@@ -7,15 +7,15 @@ from itertools import product
 class Board(object):
     def __init__(self, width):
         self.__width = width
-        # 0 for emply, ±1 for each player
-        self.__layout = [[0] * self.__width for x in range(self.__width)]
         self.__sign = {-1: '●', 0: '┼', +1: 'o'}  # repr sign
         self.__capacity = self.__width ** 2  # how many empty positions
-        self.__all_stones = set([])
+        # 0 for emply, ±1 for each player
+        self._layout = [[0] * self.__width for x in range(self.__width)]
+        self.all_stones = set([])
 
     def __str__(self):
         str_repr = ''
-        for i, row in enumerate(self.__layout):
+        for i, row in enumerate(self._layout):
             str_repr += '%2d ' % (self.__width - i)
             str_repr += '─'.join([self.__sign[x] for x in row]) + '\n'
         axis_x = [chr(x + ord('A')) for x in range(self.__width)]
@@ -24,11 +24,11 @@ class Board(object):
 
     def __getitem__(self, key):
         if isinstance(key, int):
-            return self.__layout[key]
+            return self._layout[key]
         if isinstance(key, tuple):
-            return self.__layout[key[0]][key[1]]
+            return self._layout[key[0]][key[1]]
 
-    def __set__layout(self, pos, val):
+    def _set_layout(self, pos, val):
         # all layout set operation should use this func
         # including placing and REMOVING
         if not self.is_pos_in_board(pos):
@@ -37,14 +37,14 @@ class Board(object):
             raise ValueError('Not available board value')
         i, j = pos
         # update capacity. 0 -> ±1 or ±1 -> 0 would cause capacity change
-        self.__capacity += abs(self.__layout[i][j]) - abs(val)
+        self.__capacity += abs(self._layout[i][j]) - abs(val)
         # update all_ponits
         if val == 0:
-            self.__all_stones.discard((i, j))
+            self.all_stones.discard((i, j))
         else:
-            self.__all_stones.add((i, j))
+            self.all_stones.add((i, j))
         # DO!
-        self.__layout[i][j] = val
+        self._layout[i][j] = val
 
     @property
     def capacity(self):
@@ -55,13 +55,9 @@ class Board(object):
         return self.__width
 
     @property
-    def all_stones(self):
-        return list(self.__all_stones)
-
-    @property
     def all_availables(self):
         all_moves = set(product(range(self.__width), range(self.__width)))
-        return list(all_moves - self.__all_stones)
+        return list(all_moves - self.all_stones)
 
     def is_pos_in_board(self, pos):
         return False if max(pos) >= self.__width or min(pos) < 0 else True
@@ -73,15 +69,15 @@ class Board(object):
         return True if self.__capacity == self.__width ** 2 else False
 
     def place(self, pos, player):
-        if pos in self.__all_stones:  # already placed
+        if pos in self.all_stones:  # already placed
             return False
-        self.__set__layout(pos, player)
+        self._set_layout(pos, player)
         return True
 
     def undo_place(self, pos):
-        if pos not in self.__all_stones:  # not placed
+        if pos not in self.all_stones:  # not placed
             return False
-        self.__set__layout(pos, 0)
+        self._set_layout(pos, 0)
         return True
 
     def max_abs_subsum(self, st_pos, ed_pos, npos):
@@ -96,16 +92,16 @@ class Board(object):
             raise ValueError('start_pos and end_pos not in a line')
         data_line = []
         if self.is_pos_in_board(st_pos):
-            data_line.append(self.__layout[i][j])
+            data_line.append(self._layout[i][j])
         while not (i == ed_i and j == ed_j):  # move one step to end_pos
             i = i + common.sign(ed_i - i)
             j = j + common.sign(ed_j - j)
             if self.is_pos_in_board((i, j)):
-                data_line.append(self.__layout[i][j])
+                data_line.append(self._layout[i][j])
         sums = [sum(data_line[offset:offset+npos]) for offset in range(npos)]
         return common.max_abs(sums)
 
-    def __add_around(self, moves, pos, radius):
+    def _add_around(self, moves, pos, radius):
         # update available moves around the position
         i, j = pos
         for row, col in product(range(i-radius, i+radius+1), range(j-radius, j+radius+1)):
@@ -125,7 +121,7 @@ class Board(object):
         moves = set([])
         while True:
             for pos in self.all_stones:
-                moves = self.__add_around(moves, pos, radius)
+                moves = self._add_around(moves, pos, radius)
             if len(moves) >= self.capacity or len(moves) >= MIN_COUNT:
                 return list(moves)
             radius += 1
