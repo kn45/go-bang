@@ -9,13 +9,14 @@ class Board(object):
         self.width = width
         self.capacity = self.width ** 2  # how many empty positions
         # 0 for emply, ±1 for each player
-        self._layout = [[0] * self.width for x in range(self.width)]
+        self.layout = [[0] * self.width for x in range(self.width)]
         self.all_stones = set([])
+        self._nearby_availables = set([])
 
     def __str__(self):
         SIGN = {-1: '●', 0: '┼', +1: 'o'}  # repr sign
         str_repr = ''
-        for i, row in enumerate(self._layout):
+        for i, row in enumerate(self.layout):
             str_repr += '%2d ' % (self.width - i)
             str_repr += '─'.join([SIGN[x] for x in row]) + '\n'
         axis_x = [chr(x + ord('A')) for x in range(self.width)]
@@ -23,7 +24,7 @@ class Board(object):
         return str_repr
 
     def __hash__(self):
-        return hash('|'.join(['|'.join(map(str, x)) for x in self._layout]))
+        return hash('|'.join(['|'.join(map(str, x)) for x in self.layout]))
 
     @property
     def all_availables(self):
@@ -41,11 +42,10 @@ class Board(object):
 
     def place(self, pos, player):
         i, j = pos
+        self.layout[i][j] = player
         self.capacity -= 1
         self.all_stones.add((i, j))
-        # DO!
-        self._layout[i][j] = player
-        return True
+        self._update_nearby(pos)
 
     def max_abs_subsum(self, st_pos, ed_pos, npos):
         # return the npos-subsum in the line-shaped region with max abs
@@ -59,36 +59,25 @@ class Board(object):
             raise ValueError('start_pos and end_pos not in a line')
         data_line = []
         if self.is_pos_in_board(st_pos):
-            data_line.append(self._layout[i][j])
+            data_line.append(self.layout[i][j])
         while not (i == ed_i and j == ed_j):  # move one step to end_pos
             i = i + common.sign(ed_i - i)
             j = j + common.sign(ed_j - j)
             if self.is_pos_in_board((i, j)):
-                data_line.append(self._layout[i][j])
+                data_line.append(self.layout[i][j])
         sums = [sum(data_line[offset:offset+npos]) for offset in range(npos)]
         return common.max_abs(sums)
 
-    def _add_around(self, moves, pos, radius):
-        # update available moves around the position
-        i, j = pos
-        for row, col in product(range(i-radius, i+radius+1), range(j-radius, j+radius+1)):
-            if not self.is_pos_in_board((row, col)):
-                continue
-            if self._layout[row][col] == 0:
-                moves.add((row, col))
-        return moves
-
     @property
     def nearby_availables(self):
-        MIN_COUNT = 8
+        if len(self._nearby_availables) == 0:
+            return [(int(self.width/2), int(self.width/2))]
+        return list(self._nearby_availables)
+
+    def _update_nearby(self, pos):
         radius = 1
-        if self.is_empty():
-            center = int(self.width / 2)
-            return [(center, center)]
-        moves = set([])
-        while True:
-            for pos in self.all_stones:
-                moves = self._add_around(moves, pos, radius)
-            if len(moves) >= self.capacity or len(moves) >= MIN_COUNT:
-                return list(moves)
-            radius += 1
+        self._nearby_availables.discard(pos)
+        i, j = pos
+        for row, col in product(range(i-radius, i+radius+1), range(j-radius, j+radius+1)):
+            if self.is_pos_in_board((row, col)) and self.layout[row][col] == 0:
+                self._nearby_availables.add((row, col))
