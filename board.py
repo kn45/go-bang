@@ -107,9 +107,8 @@ class Board(object):
 
     def __add_around(self, moves, pos, radius):
         # update available moves around the position
-        c_i, c_j = pos
-        update_range = range(c_i-radius, c_i+radius+1)
-        for row, col in product(update_range, update_range):
+        i, j = pos
+        for row, col in product(range(i-radius, i+radius+1), range(j-radius, j+radius+1)):
             if not self.is_pos_in_board((row, col)):
                 continue
             if self[row][col] == 0:
@@ -118,8 +117,8 @@ class Board(object):
 
     @property
     def nearby_availables(self):
-        MIN_COUNT = 20
-        radius = 2
+        MIN_COUNT = 8
+        radius = 1
         if self.is_empty():
             center = int(self.width / 2)
             return [(center, center)]
