@@ -1,3 +1,4 @@
+import common
 import copy
 import numpy as np
 import random
@@ -83,9 +84,9 @@ class MCTS(object):
 
     def get_visit_prob(self, game):
         for n in range(self._nrollout):  # do nround of MC search
-            if n % 100 == 0:
-                print n
+            common.draw_progress(n, self._nrollout, pref='AI thinking:', barlen=30)
             self._search(copy.deepcopy(game))
+        print ''
         return [(act, child._nvisit/self._root._nvisit)
                 for act, child in self._root._children.items()]
 
@@ -95,7 +96,7 @@ class MCTS(object):
 
 class MCTSPlayer(object):
     def __init__(self, player_idx):
-        self._mcts = MCTS(nrollout=1000)
+        self._mcts = MCTS(nrollout=4000)
         self._player_idx = player_idx
 
     def choose_best_move(self, game, *args):
