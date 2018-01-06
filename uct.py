@@ -96,7 +96,7 @@ class MCTS(object):
 
 class MCTSPlayer(object):
     def __init__(self, player_idx):
-        self._uct = MCTS(nrollout=4000)
+        self._uct = MCTS(nrollout=1000)
         self._player_idx = player_idx
 
     def choose_best_move(self, game, *args):
