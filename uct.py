@@ -5,7 +5,7 @@ import random
 from game import GameStatus
 
 
-class MCTSNode(object):
+class UCTNode(object):
     def __init__(self, parent=None):
         self._parent = parent
         self._children = {}
@@ -22,7 +22,7 @@ class MCTSNode(object):
 
     def expand(self, actions):
         for action in actions:
-            self._children[action] = MCTSNode(parent=self)
+            self._children[action] = UCTNode(parent=self)
 
     def backpropagate(self, nwin):
         p = self
@@ -47,10 +47,10 @@ class MCTSNode(object):
                 self._C * np.sqrt(np.log(self._parent._nvisit)/(self._nvisit))
 
 
-class MCTS(object):
+class UCT(object):
     def __init__(self, nrollout):
         self._nrollout = nrollout
-        self._root = MCTSNode(None)
+        self._root = UCTNode(None)
 
     def _search(self, game):
         # selection -> expansion -> simulation -> backpropagation
@@ -91,13 +91,12 @@ class MCTS(object):
                 for act, child in self._root._children.items()]
 
     def reset(self):
-        self._root = MCTSNode(None)
+        self._root = UCTNode(None)
 
 
-class MCTSPlayer(object):
-    def __init__(self, player_idx):
-        self._uct = MCTS(nrollout=1000)
-        self._player_idx = player_idx
+class UCTPlayer(object):
+    def __init__(self):
+        self._uct = UCT(nrollout=4000)
 
     def choose_best_move(self, game, *args):
         move_probs = self._uct.get_visit_prob(game)
