@@ -22,11 +22,8 @@ class Board(object):
         str_repr += ' ' * 3 + ' '.join(axis_x)
         return str_repr
 
-    def __getitem__(self, key):
-        if isinstance(key, int):
-            return self._layout[key]
-        if isinstance(key, tuple):
-            return self._layout[key[0]][key[1]]
+    def __hash__(self):
+        return hash('|'.join(['|'.join(map(str, x)) for x in self._layout]))
 
     def _set_layout(self, pos, val):
         # all layout set operation should use this func
@@ -107,7 +104,7 @@ class Board(object):
         for row, col in product(range(i-radius, i+radius+1), range(j-radius, j+radius+1)):
             if not self.is_pos_in_board((row, col)):
                 continue
-            if self[row][col] == 0:
+            if self._layout[row][col] == 0:
                 moves.add((row, col))
         return moves
 
@@ -130,6 +127,5 @@ class Board(object):
 if __name__ == '__main__':
     board = Board(15)
     print board.max_abs_subsum((-1, 2), (2, 2), 3)
-    print board[1][2]
     board2 = Board(3)
     print board2
