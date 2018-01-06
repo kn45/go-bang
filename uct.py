@@ -69,11 +69,11 @@ class UCT(object):
             act, node2explore = children[int(random.random()*len(children))]
             # simulation
             game.move(act)
-            value = self.get_simulate_value(game)
+            value = self._get_simulate_value(game)
         # backpropagation
         node2explore.backpropagate(1.0-value)
 
-    def get_simulate_value(self, game):
+    def _get_simulate_value(self, game):
         # self win probability
         player = game.player
         while game.game_status == GameStatus.UNDERGOING:
