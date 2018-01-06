@@ -78,17 +78,6 @@ class Game(object):
         self.__player *= -1
         return True
 
-    def undo_move(self):
-        if len(self.__stone_history) == 0:
-            return False
-        last_move = self.__stone_history[-1]
-        succ = self.__board.undo_place(last_move)
-        if not succ:
-            return False
-        self.__stone_history.pop()
-        self.__player *= -1
-        return True
-
 
 class GoBang(Game):
     def __init__(self):
@@ -107,6 +96,5 @@ if __name__ == '__main__':
     game.move((8, 9))
     print game.board, game._Game__player
     print game._Game__stone_history
-    game.undo_move()
     print game.board, game._Game__player
     print game._Game__stone_history
