@@ -22,7 +22,8 @@ class UCTNode(object):
 
     def expand(self, actions):
         for action in actions:
-            self._children[action] = UCTNode(parent=self)
+            if action not in self._children:
+                self._children[action] = UCTNode(parent=self)
 
     def backpropagate(self, nwin):
         p = self
