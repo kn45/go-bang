@@ -3,7 +3,7 @@
 from uct import *
 from game import *
 from player import *
-from common import cprint
+from common import cprint, pos2h
 
 
 def play_game(game, p1, p2, verbose=True):
@@ -14,11 +14,8 @@ def play_game(game, p1, p2, verbose=True):
         player_idx = (game.player + 1) / 2  # (-1,+1) -> (0,1)
         move, value = players[player_idx].choose_best_move(game, True)
         game.move(move)
-        """
-        if game.player == -1:
-            break
-        """
         gprint(game.board)
+        print 'last move:', pos2h(move, 15)
     gprint('Res:' + str(game.game_status))
     return game.game_status
 
