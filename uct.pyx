@@ -96,7 +96,7 @@ class UCT(object):
 
 class UCTPlayer(object):
     def __init__(self):
-        self._uct = UCT(nrollout=4000)
+        self._uct = UCT(nrollout=10000)
 
     def choose_best_move(self, game, *args):
         move_probs = self._uct.get_visit_prob(game)
