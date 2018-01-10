@@ -94,6 +94,12 @@ class UCT(object):
     def reset(self):
         self._root = UCTNode(None)
 
+    def fast_forward(self, act):
+        if act in self._root._children:
+            self._root = self._root._children[act]
+        else:
+            self._root = UCTNode(None)
+
 
 class UCTPlayer(object):
     def __init__(self):
@@ -103,4 +109,16 @@ class UCTPlayer(object):
         move_probs = self._uct.get_visit_prob(game)
         move, prob = max(move_probs, key=lambda x: x[1])
         self._uct.reset()
+        return move, prob
+
+
+class UCTPlayer2(object):
+    def __init__(self):
+        self._uct = UCT(nrollout=10000)
+
+    def choose_best_move(self, game, *args):
+        self._uct.fast_forward(game.stone_history[-1] if len(game.stone_history) > 0 else None)
+        move_probs = self._uct.get_visit_prob(game)
+        move, prob = max(move_probs, key=lambda x: x[1])
+        self._uct.fast_forward(move)
         return move, prob
