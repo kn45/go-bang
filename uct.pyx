@@ -91,9 +91,6 @@ class UCT(object):
         return [(act, child._nvisit/self._root._nvisit)
                 for act, child in self._root._children.items()]
 
-    def reset(self):
-        self._root = UCTNode(None)
-
     def fast_forward(self, act):
         if act in self._root._children:
             self._root = self._root._children[act]
@@ -102,17 +99,6 @@ class UCT(object):
 
 
 class UCTPlayer(object):
-    def __init__(self):
-        self._uct = UCT(nrollout=10000)
-
-    def choose_best_move(self, game, *args):
-        move_probs = self._uct.get_visit_prob(game)
-        move, prob = max(move_probs, key=lambda x: x[1])
-        self._uct.reset()
-        return move, prob
-
-
-class UCTPlayer2(object):
     def __init__(self):
         self._uct = UCT(nrollout=10000)
 
