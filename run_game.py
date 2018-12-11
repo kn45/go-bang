@@ -40,8 +40,9 @@ if __name__ == '__main__':
     # play_game(GoBang(), RandomPlayer(), ManualPlayer())
     # play_game(GoBang(), RandomPlayer(), GoBangPlayer())
     # play_game(GoBang(), RandomPlayer(), UCTPlayer())
-    play_game(GoBang(), ManualPlayer(), UCTPlayer())
-    # play_game(GoBang(), UCTPlayer(), ManualPlayer())
+    # play_game(GoBang(), ManualPlayer(), UCTPlayer())
+    # play_game(GoBang(), UCTPlayer(), UCTPlayer())
+    play_game(GoBang(), UCTPlayer(), ManualPlayer())
     # print play_gobang_rounds(RandomPlayer(), GoBangPlayer(), nround=10)
 
     # play_game(TicTacToe(), ManualPlayer(), TicTacToePlayer())
