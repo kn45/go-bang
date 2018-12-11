@@ -100,7 +100,7 @@ class UCT(object):
 
 class UCTPlayer(object):
     def __init__(self):
-        self._uct = UCT(nrollout=10000)
+        self._uct = UCT(nrollout=20000)
 
     def choose_best_move(self, game, *args):
         self._uct.fast_forward(game.stone_history[-1] if len(game.stone_history) > 0 else None)
